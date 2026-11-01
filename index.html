@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Transport Wallet - SIMS Portal</title>
+<title>My Wallet - My Ride</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -52,8 +52,6 @@
     transform: rotate(45deg) translateY(-2px); transition: transform .2s; }
   .plate[aria-expanded="true"]::after { transform: rotate(-135deg) translateY(-2px); }
   .plate:focus-visible { outline: 2px solid rgba(37,99,235,.5); outline-offset: 3px; }
-  .type, .since { color: var(--muted); font-size: 12px; line-height: 1.5; }
-  .since { margin-top: 3px; }
   .model { font-size: 14px; text-align: right; margin-left: auto; }
   .model b { display: block; font-weight: 700; }
   .photos { display: none; padding: 0 14px 14px; gap: 10px; flex-direction: column; }
@@ -73,13 +71,13 @@
 <header class="navbar">
   <div class="brand">
     <!-- Replace src with your own emblem image -->
-    <img src="emblem.png" alt="" onerror="this.style.visibility='hidden'">
-    <span><b>SIMS</b> Portal</span>
+    <img src="emblem.png" alt="" onerror="this.remove()">
+    <span><b>My</b> Ride</span>
   </div>
 </header>
 
 <main>
-  <h1>Transport Wallet</h1>
+  <h1>My Wallet</h1>
 
   <section class="card">
     <div class="card-head vehicle-head">
@@ -93,13 +91,61 @@
 </main>
 
 <script>
-  const IDS = [
-    "1KJrMTX0BWAZ5JyY8h0xGIP1D9TyVIj91",
-    "17ptFqlmzvn1oMxkvdX5-jMmCnWsPP9Y8",
-    "19sVLajH1aVyh05UmLmFAjjIB6Ct-JbB0"
-  ];
+  /* ============================================================
+     HOW TO ADD A BIKE AND ITS PHOTOS
+     ------------------------------------------------------------
+     1. Upload each photo to Google Drive.
+        Right-click > Share > General access > "Anyone with the link".
+     2. Copy the photo link. It looks like:
+        https://drive.google.com/file/d/FILE_ID/view?usp=drivesdk
+     3. Copy ONLY the FILE_ID (the part between /d/ and /view).
+     4. Paste each FILE_ID inside images: [ ... ] below, in quotes,
+        separated by commas. Any number of photos works.
+     5. To add another bike, copy one whole { ... } block, put a comma
+        after the previous block, and change plate, model, make, images.
+     ============================================================ */
   const vehicles = [
-    { plate: "A0A5667", type: "MOTOR CYCLE (Motor Cycles > 50cc)", since: "17 Dec 2025", model: "C100MS - DREAM", make: "HONDA", images: IDS }
+    {
+      plate: "A0A5667",
+      model: "C100MS - DREAM",
+      make: "HONDA",
+      images: [
+        "1igLd1-vu6Ijtgp2-2P_s7e3B1huHj5du",   // photo 1 (FILE_ID)
+        "18EZ3uH1gh4KysYdCNrMGO6V8uZgf9rj2",   // photo 2 (FILE_ID)
+        "1uYdHoif9XQXErAO5LhxQXZIQrXduNyg2"    // photo 3 (FILE_ID)
+      ]
+    },
+    {
+      plate: "A0B5266",
+      model: "C100MS - DREAM",
+      make: "HONDA",
+      images: [
+        "1j5MoO4WtRhjPWQD5LuAJ9XgkkNVrmXHc",   // photo 1 (FILE_ID)
+        "1VYcX34O1q3QsLspQ1AWPzu7l9EK0cPGh",   // photo 2 (FILE_ID)
+        "1Mx2T5dbqEfruTlPrS43Tar37XyQbh0ms"    // photo 3 (FILE_ID)
+      ]
+    },
+    {
+      plate: "A0D1412",
+      model: "MD26 DEGREE",
+      make: "HONDA",
+      images: [
+        "1KJrMTX0BWAZ5JyY8h0xGIP1D9TyVIj91",   // photo 1 (FILE_ID)
+        "17ptFqlmzvn1oMxkvdX5-jMmCnWsPP9Y8",   // photo 2 (FILE_ID)
+        "19sVLajH1aVyh05UmLmFAjjIB6Ct-JbB0"    // photo 3 (FILE_ID)
+      ]
+    },
+    {
+      plate: "A0K3281",
+      model: "CLASSIC 350",
+      make: "ROYAL ENFIELD",
+      images: [
+        "1U_RbgfvJ2jD_kEMm2r3ZwXSdn0aLoWGU",   // photo 1 (FILE_ID)
+        "1C95KtAr4MGWkgMa2T3Skc_gLQ0-oAVfb",   // photo 2 (FILE_ID)
+        "1WTIDLc5CilU6X6WrSBsHDkjetauUnULy"    // photo 3 (FILE_ID)
+      ]
+    }
+    // Add the next bike here: put a comma after the block above, then copy a { ... } block.
   ];
   const list = document.getElementById("list");
 
@@ -109,14 +155,12 @@
       const wrap = document.createElement("div");
       wrap.className = "vehicle-wrap";
       wrap.innerHTML =
-        '<div class="vehicle"><div class="vehicle-info"><div class="plate-row"><button class="plate" aria-expanded="false" aria-controls="photos-' + i + '"></button></div><div class="type"></div><div class="since"></div></div>' +
+        '<div class="vehicle"><div class="vehicle-info"><div class="plate-row"><button class="plate" aria-expanded="false" aria-controls="photos-' + i + '"></button></div></div>' +
         '<div class="model"><b></b><span></span></div></div>' +
         '<div class="photos" id="photos-' + i + '"></div>';
       const btn = wrap.querySelector(".plate");
       const box = wrap.querySelector(".photos");
       btn.textContent = v.plate;
-      wrap.querySelector(".type").textContent = v.type;
-      wrap.querySelector(".since").textContent = "From " + v.since + " till validity updated.";
       wrap.querySelector(".model b").textContent = v.model;
       wrap.querySelector(".model span").textContent = v.make;
       let loaded = false;
@@ -147,4 +191,3 @@
 </script>
 </body>
 </html>
-
