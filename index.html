@@ -1,1 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transport Wallet - SIMS Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7fafd;
+    --card: #ffffff;
+    --head: #f2f3f5;
+    --line: #dfe2e6;
+    --text: #111827;
+    --muted: #6b7280;
+    --border: #5b6270;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Roboto, -apple-system, "Segoe UI", Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    min-height: 100vh;
+  }
+  .navbar {
+    background: #fff;
+    height: 64px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px 4px rgba(0,0,0,.12);
+    position: sticky; top: 0; z-index: 5;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-size: 22px; }
+  .brand b { font-weight: 700; }
+  .brand img { width: 40px; height: 40px; object-fit: contain; }
+  main { max-width: 640px; margin: 0 auto; padding: 24px 16px 60px; }
+  h1 { font-size: 28px; font-weight: 700; margin: 8px 0 20px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    box-shadow: 0 1px 4px rgba(0,0,0,.1);
+    margin-bottom: 40px;
+  }
+  .card-head {
+    background: var(--head);
+    padding: 20px 22px;
+    border-bottom: 1px solid var(--line);
+  }
+  .card-head h2 { margin: 0; font-size: 26px; font-weight: 400; }
+  .card-head p { margin: 6px 0 0; font-size: 20px; color: var(--muted); }
+  .vehicle-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .vehicle {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 22px;
+    border-bottom: 1px solid var(--line);
+    gap: 12px;
+  }
+  .vehicle:last-child { border-bottom: 0; }
+  .plate { font-weight: 700; font-size: 20px; margin-bottom: 14px; }
+  .type, .since { color: var(--muted); font-size: 17px; line-height: 1.5; }
+  .since { margin-top: 6px; }
+  .model { text-align: left; font-size: 20px; }
+  .model b { display: block; font-weight: 700; }
+  .vehicle-wrap { border-bottom: 1px solid var(--line); }
+  .vehicle-wrap:last-child { border-bottom: 0; }
+  .vehicle-wrap .vehicle { border-bottom: 0; }
+  .plate {
+    background: none; border: 0; padding: 0; font-family: inherit;
+    color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+    text-decoration: none; font-weight: 700; font-size: 20px;
+  }
+  .plate::after { content: ""; width: 9px; height: 9px; border: solid currentColor; border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translateY(-2px); transition: transform .2s; }
+  .plate[aria-expanded="true"]::after { transform: rotate(-135deg) translateY(-2px); }
+  .plate:focus-visible { outline: 3px solid rgba(37,99,235,.4); outline-offset: 3px; }
+  .photos { display: none; padding: 0 22px 22px; gap: 14px; flex-direction: column; }
+  .photos.open { display: flex; }
+  .photos a { display: block; }
+  .photos img { width: 100%; height: auto; display: block; border: 1px solid var(--line); background: #eef1f4; min-height: 120px; }
+  .empty { padding: 22px; color: var(--muted); font-size: 18px; }
+  @media (max-width: 420px) {
+    h1 { font-size: 24px; }
+    .card-head h2 { font-size: 22px; }
+    .card-head p { font-size: 17px; }
+        .plate, .model { font-size: 17px; }
+    .type, .since { font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="navbar">
+  <div class="brand">
+    <!-- Replace src with your own emblem image -->
+    <img src="emblem.png" alt="" onerror="this.style.visibility='hidden'">
+    <span><b>SIMS</b> Portal</span>
+  </div>
+</header>
+
+<main>
+  <h1>Transport Wallet</h1>
+
+  <section class="card">
+    <div class="card-head vehicle-head">
+      <div>
+        <h2>My Vehicle Registry</h2>
+        
+      </div>
+    </div>
+    <div id="list"></div>
+  </section>
+</main>
+
+<script>
+  const IDS = [
+    "1KJrMTX0BWAZ5JyY8h0xGIP1D9TyVIj91",
+    "17ptFqlmzvn1oMxkvdX5-jMmCnWsPP9Y8",
+    "19sVLajH1aVyh05UmLmFAjjIB6Ct-JbB0"
+  ];
+  const vehicles = [
+    { plate: "A0A5667", type: "MOTOR CYCLE (Motor Cycles > 50cc)", since: "17 Dec 2025", model: "C100MS - DREAM", make: "HONDA", images: IDS }
+  ];
+  const list = document.getElementById("list");
+
+  function render(items) {
+    list.innerHTML = items.length ? "" : '<div class="empty">No vehicles found.</div>';
+    items.forEach((v, i) => {
+      const wrap = document.createElement("div");
+      wrap.className = "vehicle-wrap";
+      wrap.innerHTML =
+        '<div class="vehicle"><div><div class="plate-row" style="margin-bottom:14px"><button class="plate" aria-expanded="false" aria-controls="photos-' + i + '" style="margin:0"></button></div><div class="type"></div><div class="since"></div></div>' +
+        '<div class="model"><b></b><span></span></div></div>' +
+        '<div class="photos" id="photos-' + i + '"></div>';
+      const btn = wrap.querySelector(".plate");
+      const box = wrap.querySelector(".photos");
+      btn.textContent = v.plate;
+      wrap.querySelector(".type").textContent = v.type;
+      wrap.querySelector(".since").textContent = "From " + v.since + " till validity updated.";
+      wrap.querySelector(".model b").textContent = v.model;
+      wrap.querySelector(".model span").textContent = v.make;
+      let loaded = false;
+      btn.addEventListener("click", () => {
+        const open = box.classList.toggle("open");
+        btn.setAttribute("aria-expanded", open);
+        if (open && !loaded) {
+          loaded = true;
+          v.images.forEach((id, n) => {
+            const a = document.createElement("a");
+            a.href = "https://drive.google.com/file/d/" + id + "/view";
+            a.target = "_blank"; a.rel = "noopener";
+            const img = document.createElement("img");
+            img.alt = v.plate + " photo " + (n + 1);
+            img.loading = "lazy";
+            img.src = "https://lh3.googleusercontent.com/d/" + id;
+            img.onerror = () => { img.onerror = null; img.src = "https://drive.google.com/thumbnail?id=" + id + "&sz=w1200"; };
+            a.appendChild(img);
+            box.appendChild(a);
+          });
+        }
+      });
+      list.appendChild(wrap);
+    });
+  }
+
+  render(vehicles);
+</script>
+</body>
+</html>
 
